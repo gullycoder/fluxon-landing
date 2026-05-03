@@ -1,1 +1,52 @@
+# OS noise
 .DS_Store
+Thumbs.db
+.AppleDouble
+.LSOverride
+
+# Editors / IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment / secrets — NEVER commit
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Node (in case we add Next.js / npm later)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.npm/
+.pnpm-store/
+
+# Vercel
+.vercel/
+
+# Build outputs (in case framework added later)
+dist/
+build/
+out/
+.next/
+.nuxt/
+.cache/
+
+# Logs
+*.log
+logs/
+
+# Coverage / tests
+coverage/
+.nyc_output/
+
+# Misc
+.tmp/
+tmp/
+*.bak
