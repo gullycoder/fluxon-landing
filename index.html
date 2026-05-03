@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fluxon AI — Procurement that runs itself</title>
+  <meta name="description" content="The autonomous procurement agent for cloud kitchens. Five specialist sub-agents. 9.4 seconds. Daily indent with auditable reasoning. Built by ex-Grofers Mumbai head + Freshly CTO." />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Fluxon AI — Procurement that runs itself" />
+  <meta property="og:description" content="Autonomous procurement agent for cloud kitchens. Real working system: 9.4s end-to-end, 100% service level, 0 expected wastage." />
+  <meta property="og:url" content="https://fluxon-ai.com" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Fluxon AI" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='38' fill='%2310b981'/%3E%3Ccircle cx='50' cy='50' r='14' fill='%230a0a0a'/%3E%3C/svg%3E" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+
+    .gradient-bg {
+      background:
+        radial-gradient(ellipse 80% 50% at 50% 0%, rgba(16, 185, 129, 0.15), transparent 70%),
+        radial-gradient(ellipse 60% 40% at 100% 0%, rgba(59, 130, 246, 0.06), transparent 70%),
+        #050505;
+    }
+    .grid-bg {
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+    .agent-card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.015));
+      border: 1px solid rgba(255,255,255,0.07);
+      transition: all 0.2s;
+    }
+    .agent-card:hover {
+      border-color: rgba(16, 185, 129, 0.4);
+      transform: translateY(-2px);
+    }
+    .stat-tile {
+      background: linear-gradient(180deg, rgba(16, 185, 129, 0.04), rgba(16, 185, 129, 0.01));
+      border: 1px solid rgba(16, 185, 129, 0.15);
+    }
+    .indent-row:hover { background: rgba(16, 185, 129, 0.03); }
+    details > summary { cursor: pointer; list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+    details[open] summary .chev { transform: rotate(90deg); }
+    .chev { transition: transform 0.2s; }
+
+    .dot-pulse::before {
+      content: '';
+      display: inline-block;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #10b981;
+      margin-right: 8px;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.3); }
+    }
+
+    .scroll-fade {
+      mask-image: linear-gradient(180deg, black 80%, transparent);
+      -webkit-mask-image: linear-gradient(180deg, black 80%, transparent);
+    }
+  </style>
+</head>
+
+<body class="bg-neutral-950 text-neutral-100 antialiased">
+
+  <!-- ========== NAV ========== -->
+  <nav class="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-neutral-950/70 border-b border-neutral-900">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2.5">
+        <div class="relative w-7 h-7">
+          <div class="absolute inset-0 rounded-full bg-emerald-500"></div>
+          <div class="absolute inset-[5px] rounded-full bg-neutral-950"></div>
+        </div>
+        <span class="font-semibold text-lg tracking-tight">Fluxon</span>
+        <span class="text-neutral-600 text-sm hidden sm:inline">/ AI</span>
+      </a>
+      <div class="flex items-center gap-3">
+        <a href="#proof" class="text-sm text-neutral-400 hover:text-neutral-100 transition hidden sm:inline">See it run</a>
+        <a href="#founder" class="text-sm text-neutral-400 hover:text-neutral-100 transition hidden sm:inline">Founder</a>
+        <a href="#demo" class="text-sm font-medium px-4 py-2 rounded-md bg-emerald-500 text-neutral-950 hover:bg-emerald-400 transition">
+          Request demo
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ========== HERO ========== -->
+  <section class="gradient-bg pt-36 pb-24 px-6 relative overflow-hidden">
+    <div class="absolute inset-0 grid-bg opacity-50"></div>
+    <div class="max-w-5xl mx-auto relative">
+
+      <!-- YC badge -->
+      <div class="flex justify-center mb-8">
+        <a href="https://www.ycombinator.com/" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-400 text-xs font-medium mono hover:bg-orange-500/15 transition">
+          <span class="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse"></span>
+          Applying · YC Summer 2026
+        </a>
+      </div>
+
+      <h1 class="text-5xl sm:text-7xl lg:text-8xl font-bold tracking-tight text-center mb-8 leading-[1.05]">
+        Procurement that<br/>
+        <span class="bg-gradient-to-r from-emerald-300 to-emerald-500 bg-clip-text text-transparent">runs itself.</span>
+      </h1>
+
+      <p class="text-xl sm:text-2xl text-neutral-400 max-w-3xl mx-auto mb-4 text-center leading-relaxed">
+        The autonomous procurement agent for cloud kitchens.
+      </p>
+      <p class="text-base sm:text-lg text-neutral-500 max-w-3xl mx-auto mb-12 text-center mono">
+        Five specialist sub-agents. <span class="text-emerald-400">9.4 seconds.</span> Daily indent — with auditable reasoning per line.
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-3 justify-center mb-16">
+        <a href="#proof" class="px-7 py-3.5 rounded-md bg-emerald-500 text-neutral-950 font-semibold hover:bg-emerald-400 transition flex items-center justify-center gap-2">
+          See it run
+          <span>↓</span>
+        </a>
+        <a href="#demo" class="px-7 py-3.5 rounded-md border border-neutral-700 text-neutral-100 font-semibold hover:border-neutral-500 hover:bg-neutral-900 transition">
+          Request demo
+        </a>
+      </div>
+
+      <!-- Founder credibility strip -->
+      <div class="max-w-3xl mx-auto">
+        <div class="text-[10px] mono uppercase tracking-[0.2em] text-neutral-600 text-center mb-3">Built by</div>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 text-sm">
+          <a href="https://www.linkedin.com/in/suresh-iitd/" target="_blank" rel="noopener" class="text-neutral-300 hover:text-emerald-400 transition font-medium">
+            Suresh Kumar
+          </a>
+          <span class="hidden sm:inline text-neutral-700">·</span>
+          <span class="text-neutral-400">ex-Head, Grofers/Blinkit Mumbai Ops <span class="text-emerald-400 mono text-xs">(5,200→13,000 orders/day)</span></span>
+          <span class="hidden sm:inline text-neutral-700">·</span>
+          <span class="text-neutral-400">IIT Delhi · CTO @ Freshly</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== PROOF: LIVE INDENT ========== -->
+  <section id="proof" class="py-20 px-6 border-t border-neutral-900">
+    <div class="max-w-6xl mx-auto">
+
+      <div class="text-center mb-12">
+        <div class="text-emerald-400 text-xs font-semibold mono mb-3 dot-pulse">LIVE OUTPUT · APRIL 29, 2026</div>
+        <h2 class="text-3xl sm:text-5xl font-bold mb-4 leading-tight">
+          This is the agent's actual output.
+        </h2>
+        <p class="text-lg text-neutral-400 max-w-2xl mx-auto">
+          Synthetic Mumbai cloud-kitchen data. LightGBM quantile forecasts. PuLP MILP optimization.
+          End-to-end pipeline executed in <span class="text-emerald-400 font-semibold">9.4 seconds</span>.
+        </p>
+      </div>
+
+      <!-- Pipeline log (replicated from real orchestrator) -->
+      <div class="rounded-xl border border-neutral-800 bg-neutral-950/80 mono text-sm overflow-hidden mb-8 shadow-2xl shadow-emerald-500/5">
+        <div class="px-4 py-2.5 border-b border-neutral-900 bg-neutral-900/40 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div class="flex gap-1.5">
+              <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+              <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+              <div class="w-3 h-3 rounded-full bg-emerald-500/80"></div>
+            </div>
+            <span class="text-xs text-neutral-500 ml-2">fluxon · daily indent pipeline</span>
+          </div>
+          <span class="text-xs text-neutral-600 hidden sm:inline">target_date=2026-04-29</span>
+        </div>
+        <div class="p-5 space-y-1.5 leading-relaxed text-[13px]">
+          <div><span class="text-neutral-600">$</span> <span class="text-neutral-100">python -m fluxon.orchestrator</span></div>
+          <div class="text-neutral-600">────────────────────────────────────────────────────</div>
+          <div><span class="text-neutral-500">[  0.0s]</span> Forecast agent... <span class="text-neutral-600">running 12 LightGBM quantile models</span></div>
+          <div><span class="text-neutral-500">[  9.2s]</span> Forecast agent... done in 9.2s <span class="text-emerald-400">(P50 MAPE 14–16%)</span> <span class="text-emerald-400">✓</span></div>
+          <div><span class="text-neutral-500">[  9.2s]</span> Shelf-Life agent... done <span class="text-yellow-400">(4 SKUs flagged spoilage > 30%)</span> <span class="text-emerald-400">✓</span></div>
+          <div><span class="text-neutral-500">[  9.3s]</span> Vendor Selection agent... done <span class="text-emerald-400">(49/50 SKUs viable, top-2 candidates each)</span> <span class="text-emerald-400">✓</span></div>
+          <div><span class="text-neutral-500">[  9.4s]</span> Optimizer agent... solved in 0.15s <span class="text-emerald-400">(7 SKUs, 3 vendors, 100% service level)</span> <span class="text-emerald-400">✓</span></div>
+          <div><span class="text-neutral-500">[  9.4s]</span> Monitor agent... done <span class="text-emerald-400">(0 anomalies, rationale generated)</span> <span class="text-emerald-400">✓</span></div>
+          <div class="text-neutral-600">────────────────────────────────────────────────────</div>
+          <div class="text-emerald-400">[  9.4s] Daily indent ready: 7 SKUs · ₹7,609 · 100% service level · 0kg expected wastage</div>
+        </div>
+      </div>
+
+      <!-- The actual indent table -->
+      <div class="rounded-xl border border-neutral-800 bg-neutral-900/30 overflow-hidden">
+        <div class="px-5 py-4 border-b border-neutral-800 flex items-center justify-between flex-wrap gap-2">
+          <div>
+            <div class="text-xs text-neutral-500 mono uppercase tracking-wider">Daily indent</div>
+            <div class="text-lg font-semibold mt-0.5">7 SKUs · 3 vendors · ₹7,609.22</div>
+          </div>
+          <div class="flex gap-3 text-xs mono">
+            <span class="px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">100% service level</span>
+            <span class="px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">0kg expected waste</span>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="bg-neutral-900/60 border-b border-neutral-800">
+              <tr class="text-left text-xs text-neutral-500 mono uppercase tracking-wider">
+                <th class="px-5 py-3">SKU</th>
+                <th class="px-5 py-3">Item</th>
+                <th class="px-5 py-3 text-right">Qty (kg)</th>
+                <th class="px-5 py-3">Vendor</th>
+                <th class="px-5 py-3 text-right">Cost (₹)</th>
+                <th class="px-5 py-3 hidden lg:table-cell">Reasoning</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-neutral-900">
+              <tr class="indent-row">
+                <td class="px-5 py-3.5 mono text-xs text-neutral-500">SKU001</td>
+                <td class="px-5 py-3.5 font-medium">Tomato</td>
+                <td class="px-5 py-3.5 text-right mono text-emerald-400">41.46</td>
+                <td class="px-5 py-3.5 text-neutral-300">FreshKart Wholesale</td>
+                <td class="px-5 py-3.5 text-right mono">2,662.98</td>
+                <td class="px-5 py-3.5 text-xs text-neutral-500 hidden lg:table-cell">P90=41.5kg, on-hand expired → full reorder</td>
+              </tr>
+              <tr class="indent-row">
+                <td class="px-5 py-3.5 mono text-xs text-neutral-500">SKU009</td>
+                <td class="px-5 py-3.5 font-medium">Capsicum</td>
+                <td class="px-5 py-3.5 text-right mono text-emerald-400">12.24</td>
+                <td class="px-5 py-3.5 text-neutral-300">Mumbai Mandi Direct</td>
+                <td class="px-5 py-3.5 text-right mono">757.17</td>
+                <td class="px-5 py-3.5 text-xs text-neutral-500 hidden lg:table-cell">On-hand expired, vendor reliability 0.92</td>
+              </tr>
+              <tr class="indent-row">
+                <td class="px-5 py-3.5 mono text-xs text-neutral-500">SKU011</td>
+                <td class="px-5 py-3.5 font-medium">Cabbage</td>
+                <td class="px-5 py-3.5 text-right mono text-emerald-400">7.10</td>
+                <td class="px-5 py-3.5 text-neutral-300">Maharashtra Agro Hub</td>
+                <td class="px-5 py-3.5 text-right mono">306.86</td>
+                <td class="px-5 py-3.5 text-xs text-neutral-500 hidden lg:table-cell">9.3kg usable, top-up to P90</td>
+              </tr>
+              <tr class="indent-row">
+                <td class="px-5 py-3.5 mono text-xs text-neutral-500">SKU017</td>
+                <td class="px-5 py-3.5 font-medium">Beans</td>
+                <td class="px-5 py-3.5 text-right mono text-emerald-400">27.58</td>
+                <td class="px-5 py-3.5 text-neutral-300">Maharashtra Agro Hub</td>
+                <td class="px-5 py-3.5 text-right mono">727.28</td>
+                <td class="px-5 py-3.5 text-xs text-neutral-500 hidden lg:table-cell">Cheapest viable option @ ₹26/kg</td>
+              </tr>
+              <tr class="indent-row">
+                <td class="px-5 py-3.5 mono text-xs text-neutral-500">SKU031</td>
+                <td class="px-5 py-3.5 font-medium">Milk</td>
+                <td class="px-5 py-3.5 text-right mono text-emerald-400">18.70</td>
+                <td class="px-5 py-3.5 text-neutral-300">Maharashtra Agro Hub</td>
+                <td class="px-5 py-3.5 text-right mono">1,404.74</td>
+                <td class="px-5 py-3.5 text-xs text-neutral-500 hidden lg:table-cell">19.7kg usable, P90=37.2kg → top-up</td>
+              </tr>
+              <tr class="indent-row">
+                <td class="px-5 py-3.5 mono text-xs text-neutral-500">SKU049</td>
+                <td class="px-5 py-3.5 font-medium">Mustard Oil</td>
+                <td class="px-5 py-3.5 text-right mono text-emerald-400">15.10</td>
+                <td class="px-5 py-3.5 text-neutral-300">Maharashtra Agro Hub</td>
+                <td class="px-5 py-3.5 text-right mono">1,080.86</td>
+                <td class="px-5 py-3.5 text-xs text-neutral-500 hidden lg:table-cell">Long shelf-life staple, bulk-rate vendor</td>
+              </tr>
+              <tr class="indent-row">
+                <td class="px-5 py-3.5 mono text-xs text-neutral-500">SKU050</td>
+                <td class="px-5 py-3.5 font-medium">Besan</td>
+                <td class="px-5 py-3.5 text-right mono text-emerald-400">11.42</td>
+                <td class="px-5 py-3.5 text-neutral-300">Maharashtra Agro Hub</td>
+                <td class="px-5 py-3.5 text-right mono">669.33</td>
+                <td class="px-5 py-3.5 text-xs text-neutral-500 hidden lg:table-cell">Reliability score 0.94</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- AI rationale paragraph (real output from monitor agent) -->
+        <div class="px-5 py-5 border-t border-neutral-800 bg-neutral-900/30">
+          <div class="flex items-start gap-3">
+            <div class="flex-shrink-0 mt-1 w-6 h-6 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center">
+              <span class="text-emerald-400 text-xs">⬢</span>
+            </div>
+            <div>
+              <div class="text-xs text-emerald-400 mono uppercase tracking-wider mb-2">Monitor agent · plain-English rationale</div>
+              <p class="text-neutral-300 leading-relaxed">
+                Today's indent commits ₹7,609 across 7 SKUs, led by 41.5kg of Tomato from FreshKart Wholesale (P90 demand 41.5kg). Maharashtra Agro Hub carries the largest share at ₹4,189 (55% of spend), with the remainder split across 2 other vendors. No anomalies detected: all spoilage risks under 50%, no order exceeds 3× P90, and every selected vendor clears the 0.70 reliability floor.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-xs text-neutral-600 text-center mt-6 mono">
+        Output above is a real run from the working pipeline. Reproducible: clone repo, <span class="text-neutral-400">python -m fluxon.orchestrator</span>.
+      </p>
+    </div>
+  </section>
+
+  <!-- ========== PROBLEM ========== -->
+  <section class="py-24 px-6 border-t border-neutral-900">
+    <div class="max-w-4xl mx-auto">
+      <div class="text-emerald-400 text-xs font-semibold mono mb-4 uppercase tracking-wider">The problem</div>
+      <h2 class="text-3xl sm:text-5xl font-bold mb-10 leading-[1.1]">
+        Cloud kitchens lose <span class="text-emerald-400">8–12% of revenue</span><br/>to procurement decisions made by guesswork.
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
+        <div class="stat-tile rounded-lg p-5">
+          <div class="text-3xl font-bold text-emerald-400 mono">₹50–80L</div>
+          <div class="text-xs text-neutral-400 mt-2">Annual fresh-food waste for a 30-outlet brand</div>
+        </div>
+        <div class="stat-tile rounded-lg p-5">
+          <div class="text-3xl font-bold text-emerald-400 mono">2–4 hrs</div>
+          <div class="text-xs text-neutral-400 mt-2">A buyer spends every morning guessing quantities</div>
+        </div>
+        <div class="stat-tile rounded-lg p-5">
+          <div class="text-3xl font-bold text-emerald-400 mono">2–3%</div>
+          <div class="text-xs text-neutral-400 mt-2">Revenue back on the P&L from Afresh-class systems (US grocery benchmark)</div>
+        </div>
+      </div>
+
+      <div class="space-y-4 text-lg text-neutral-300 leading-relaxed">
+        <p>The math is structurally hard. Demand, freshness, vendor reliability, and order quantity interact non-linearly, and they change every day with weather, festivals, and supply.</p>
+        <p>Spreadsheets give up. ERPs track what was ordered, not what should be. Generic AI tools have no domain.</p>
+        <p class="text-neutral-500 italic">So the buyer guesses. Every morning. Forever.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== HOW IT WORKS ========== -->
+  <section id="how" class="py-24 px-6 border-t border-neutral-900 bg-neutral-950">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-16">
+        <div class="text-emerald-400 text-xs font-semibold mono mb-4 uppercase tracking-wider">How it works</div>
+        <h2 class="text-3xl sm:text-5xl font-bold mb-4 leading-tight">Five specialist agents.<br/>One daily decision.</h2>
+        <p class="text-lg text-neutral-400 max-w-2xl mx-auto">
+          Domain-tuned, benchmarked against Afresh InvHMM, DingDong Maicai's closed loop, and Amazon Deep Inventory Management.
+        </p>
+      </div>
+
+      <!-- Agent flow visual -->
+      <div class="hidden md:flex items-center justify-between mb-12 px-4">
+        <div class="text-center flex-1">
+          <div class="text-xs mono text-neutral-600 mb-1">INPUT</div>
+          <div class="text-sm text-neutral-400">Sales · Weather<br/>Festivals · Inventory · Vendors</div>
+        </div>
+        <div class="text-emerald-500/40 text-2xl">→</div>
+        <div class="text-center flex-[3]">
+          <div class="text-xs mono text-emerald-400 mb-1">5 AGENTS · 9.4s</div>
+        </div>
+        <div class="text-emerald-500/40 text-2xl">→</div>
+        <div class="text-center flex-1">
+          <div class="text-xs mono text-neutral-600 mb-1">OUTPUT</div>
+          <div class="text-sm text-neutral-400">Daily indent<br/>+ rationale</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+
+        <div class="agent-card rounded-xl p-6">
+          <div class="mono text-xs text-emerald-400 mb-3">⬢ FORECAST</div>
+          <h3 class="font-semibold mb-2 text-lg">Quantile demand</h3>
+          <p class="text-sm text-neutral-400 mb-4">P10/P50/P90 prediction with weather, festival, and weekend signals.</p>
+          <div class="text-xs mono text-neutral-500 pt-3 border-t border-neutral-800">
+            <span class="text-emerald-400">MAPE 14–16%</span><br/>12 LightGBM models
+          </div>
+        </div>
+
+        <div class="agent-card rounded-xl p-6">
+          <div class="mono text-xs text-emerald-400 mb-3">⬢ FRESHNESS</div>
+          <h3 class="font-semibold mb-2 text-lg">Spoilage-aware</h3>
+          <p class="text-sm text-neutral-400 mb-4">Knows what's already on the shelf and when it expires.</p>
+          <div class="text-xs mono text-neutral-500 pt-3 border-t border-neutral-800">
+            <span class="text-emerald-400">~0.1s</span><br/>50 SKUs / pass
+          </div>
+        </div>
+
+        <div class="agent-card rounded-xl p-6">
+          <div class="mono text-xs text-emerald-400 mb-3">⬢ VENDOR</div>
+          <h3 class="font-semibold mb-2 text-lg">Reliability scored</h3>
+          <p class="text-sm text-neutral-400 mb-4">Routes around the vendor that flaked yesterday. Multi-source allowed.</p>
+          <div class="text-xs mono text-neutral-500 pt-3 border-t border-neutral-800">
+            <span class="text-emerald-400">Top-2 / SKU</span><br/>price·quality·SLA
+          </div>
+        </div>
+
+        <div class="agent-card rounded-xl p-6">
+          <div class="mono text-xs text-emerald-400 mb-3">⬢ OPTIMIZER</div>
+          <h3 class="font-semibold mb-2 text-lg">Joint LP</h3>
+          <p class="text-sm text-neutral-400 mb-4">Minimizes wastage <em>and</em> stockout. Not one or the other.</p>
+          <div class="text-xs mono text-neutral-500 pt-3 border-t border-neutral-800">
+            <span class="text-emerald-400">0.15s solve</span><br/>PuLP MILP
+          </div>
+        </div>
+
+        <div class="agent-card rounded-xl p-6">
+          <div class="mono text-xs text-emerald-400 mb-3">⬢ MONITOR</div>
+          <h3 class="font-semibold mb-2 text-lg">Critic + rationale</h3>
+          <p class="text-sm text-neutral-400 mb-4">Flags anomalies. Writes the day's decisions in plain English.</p>
+          <div class="text-xs mono text-neutral-500 pt-3 border-t border-neutral-800">
+            <span class="text-emerald-400">Claude 4.5</span><br/>+ static fallback
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FOUNDER ========== -->
+  <section id="founder" class="py-24 px-6 border-t border-neutral-900">
+    <div class="max-w-5xl mx-auto">
+      <div class="text-emerald-400 text-xs font-semibold mono mb-4 uppercase tracking-wider">Founder</div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+
+        <div class="lg:col-span-2">
+          <h2 class="text-4xl sm:text-5xl font-bold mb-3">Suresh Kumar</h2>
+          <p class="text-neutral-400 mb-8 mono text-sm">Founder, CEO · Gurugram, India</p>
+
+          <div class="space-y-6 text-lg text-neutral-300 leading-relaxed">
+            <p>
+              <span class="text-white font-semibold">IIT Delhi (2008).</span> Then nine years running large-scale construction projects — including a ₹210 Cr NRDA Raipur build and the 75-acre Pioneer Park.
+            </p>
+            <p>
+              In 2019 I joined <span class="text-white font-semibold">Grofers (now Blinkit)</span> as Head of Mumbai Operations. In twelve months I scaled the city from <span class="text-emerald-400 font-semibold">5,200 to 13,000 orders/day — 150,000 line items at peak.</span> Mumbai is India's hardest metro for fresh delivery: density, traffic, real-estate, monsoon supply chain.
+            </p>
+            <p>
+              I started teaching myself to code in 2021 because hiring tech was strangling the next venture. I'm now <span class="text-white font-semibold">CTO at Freshly</span>, a Better-Capital-funded quick-commerce startup, where I built the full stack solo over 18 months — three React Native apps, the orchestration backend, and a 12-component AI procurement system benchmarked against Afresh, DingDong Maicai, and Amazon DIM. Live system: 6,000 orders/month, ₹25 lakh MRR.
+            </p>
+            <p class="text-neutral-400 italic pt-2 border-t border-neutral-900">
+              Fluxon is the version of that procurement system, built clean-room for everyone else.
+            </p>
+          </div>
+
+          <div class="flex flex-wrap gap-3 mt-8">
+            <a href="https://www.linkedin.com/in/suresh-iitd/" target="_blank" rel="noopener" class="px-4 py-2 rounded-md border border-neutral-700 text-sm font-medium hover:border-emerald-500/50 hover:bg-neutral-900 transition flex items-center gap-2">
+              LinkedIn <span class="text-neutral-500">→</span>
+            </a>
+            <a href="https://github.com/gullycoder" target="_blank" rel="noopener" class="px-4 py-2 rounded-md border border-neutral-700 text-sm font-medium hover:border-emerald-500/50 hover:bg-neutral-900 transition flex items-center gap-2">
+              GitHub <span class="text-neutral-500">→</span>
+            </a>
+            <a href="mailto:hello@fluxon-ai.com" class="px-4 py-2 rounded-md border border-neutral-700 text-sm font-medium hover:border-emerald-500/50 hover:bg-neutral-900 transition flex items-center gap-2">
+              Email <span class="text-neutral-500">→</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <div class="rounded-lg p-4 bg-neutral-900/40 border border-neutral-800">
+            <div class="text-xs mono text-neutral-500 uppercase mb-1">Operations scale</div>
+            <div class="font-semibold">Grofers Mumbai · 2.5×</div>
+            <div class="text-xs text-neutral-400 mt-1">5,200 → 13,000 orders/day in 12 months</div>
+          </div>
+          <div class="rounded-lg p-4 bg-neutral-900/40 border border-neutral-800">
+            <div class="text-xs mono text-neutral-500 uppercase mb-1">Production stack</div>
+            <div class="font-semibold">Freshly CTO · solo</div>
+            <div class="text-xs text-neutral-400 mt-1">3 mobile apps · backend · 12-component ML pipeline</div>
+          </div>
+          <div class="rounded-lg p-4 bg-neutral-900/40 border border-neutral-800">
+            <div class="text-xs mono text-neutral-500 uppercase mb-1">Technical references</div>
+            <div class="font-semibold">Afresh · DingDong · Amazon DIM</div>
+            <div class="text-xs text-neutral-400 mt-1">Architecture benchmarked against industry leaders</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== WHY NOW ========== -->
+  <section class="py-24 px-6 border-t border-neutral-900 bg-neutral-950">
+    <div class="max-w-4xl mx-auto">
+      <div class="text-emerald-400 text-xs font-semibold mono mb-4 uppercase tracking-wider">Why now</div>
+      <h2 class="text-3xl sm:text-5xl font-bold mb-12 leading-tight">
+        Three things lined up between October 2025 and April 2026.
+      </h2>
+
+      <div class="space-y-8">
+        <div class="flex gap-6 group">
+          <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mono text-emerald-400 font-semibold text-sm">01</div>
+          <div>
+            <h3 class="text-xl font-semibold mb-2">Agent infrastructure became real.</h3>
+            <p class="text-neutral-400 leading-relaxed">Anthropic's Agent Skills (Oct 2025) became an open standard adopted by OpenAI and Microsoft. Claude Managed Agents launched in production April 2026 with Notion, Sentry, and Allianz live. Long-horizon autonomous agents are no longer research demos.</p>
+          </div>
+        </div>
+        <div class="flex gap-6 group">
+          <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mono text-emerald-400 font-semibold text-sm">02</div>
+          <div>
+            <h3 class="text-xl font-semibold mb-2">Indian quick-commerce funding tightened.</h3>
+            <p class="text-neutral-400 leading-relaxed">After the 2024 contraction, every cloud kitchen and dark-store operator now optimizes unit economics before growth. Procurement waste — long ignored as 'cost of doing business' — became a CFO-level priority. The category bought what they tolerated for years.</p>
+          </div>
+        </div>
+        <div class="flex gap-6 group">
+          <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mono text-emerald-400 font-semibold text-sm">03</div>
+          <div>
+            <h3 class="text-xl font-semibold mb-2">YC's S26 RFS named this exact product.</h3>
+            <p class="text-neutral-400 leading-relaxed">Tom Blomfield's Summer 2026 Request for Startups #3: <em class="text-neutral-300">"AI-native companies that don't sell software — they sell the service."</em> Insurance, accounting, healthcare admin. Fresh procurement is the same shape: a knowledge-heavy service, currently delivered by humans, ripe for autonomous AI delivery.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== METRICS / PROOF ========== -->
+  <section class="py-24 px-6 border-t border-neutral-900">
+    <div class="max-w-5xl mx-auto">
+      <div class="text-emerald-400 text-xs font-semibold mono mb-4 uppercase tracking-wider">Proof</div>
+      <h2 class="text-3xl sm:text-4xl font-bold mb-12 leading-tight">
+        Real numbers from the running system.
+      </h2>
+
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="rounded-xl p-6 bg-gradient-to-br from-emerald-500/5 to-transparent border border-emerald-500/15">
+          <div class="text-4xl font-bold mono text-emerald-400">9.4s</div>
+          <div class="text-sm text-neutral-300 mt-2 font-medium">End-to-end pipeline</div>
+          <div class="text-xs text-neutral-500 mt-1">5 agents · 50 SKUs · 1 vendor catalog</div>
+        </div>
+        <div class="rounded-xl p-6 bg-gradient-to-br from-emerald-500/5 to-transparent border border-emerald-500/15">
+          <div class="text-4xl font-bold mono text-emerald-400">14–16%</div>
+          <div class="text-sm text-neutral-300 mt-2 font-medium">P50 forecast MAPE</div>
+          <div class="text-xs text-neutral-500 mt-1">Beat 25% spec target by 10pp</div>
+        </div>
+        <div class="rounded-xl p-6 bg-gradient-to-br from-emerald-500/5 to-transparent border border-emerald-500/15">
+          <div class="text-4xl font-bold mono text-emerald-400">100%</div>
+          <div class="text-sm text-neutral-300 mt-2 font-medium">Service level achieved</div>
+          <div class="text-xs text-neutral-500 mt-1">vs. 95% optimization target</div>
+        </div>
+        <div class="rounded-xl p-6 bg-gradient-to-br from-emerald-500/5 to-transparent border border-emerald-500/15">
+          <div class="text-4xl font-bold mono text-emerald-400">0kg</div>
+          <div class="text-sm text-neutral-300 mt-2 font-medium">Expected wastage</div>
+          <div class="text-xs text-neutral-500 mt-1">on the live indent run</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== COMPETITORS ========== -->
+  <section class="py-24 px-6 border-t border-neutral-900 bg-neutral-950">
+    <div class="max-w-5xl mx-auto">
+      <div class="text-emerald-400 text-xs font-semibold mono mb-4 uppercase tracking-wider">How we're different</div>
+      <h2 class="text-3xl sm:text-4xl font-bold mb-10 leading-tight">
+        We replace the buyer.<br/>The others replace the cashier.
+      </h2>
+
+      <div class="rounded-xl border border-neutral-800 overflow-hidden">
+        <table class="w-full text-sm">
+          <thead class="bg-neutral-900/60 border-b border-neutral-800">
+            <tr class="text-left text-xs text-neutral-500 mono uppercase tracking-wider">
+              <th class="px-5 py-4">Approach</th>
+              <th class="px-5 py-4">What it does</th>
+              <th class="px-5 py-4">What it doesn't</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-neutral-900">
+            <tr>
+              <td class="px-5 py-4 font-medium">Spreadsheets + buyer</td>
+              <td class="px-5 py-4 text-neutral-400">Status quo. 2–4 hours of human guesswork daily.</td>
+              <td class="px-5 py-4 text-neutral-500 text-xs">Doesn't model interactions, doesn't compound.</td>
+            </tr>
+            <tr>
+              <td class="px-5 py-4 font-medium">POS / ERP (Petpooja, UrbanPiper)</td>
+              <td class="px-5 py-4 text-neutral-400">Tracks what was ordered.</td>
+              <td class="px-5 py-4 text-neutral-500 text-xs">Doesn't decide what should be ordered.</td>
+            </tr>
+            <tr>
+              <td class="px-5 py-4 font-medium">Afresh (US grocery)</td>
+              <td class="px-5 py-4 text-neutral-400">Distributor-driven supermarket procurement.</td>
+              <td class="px-5 py-4 text-neutral-500 text-xs">Doesn't transfer to mandi-driven Indian supply chains.</td>
+            </tr>
+            <tr>
+              <td class="px-5 py-4 font-medium">In-house ML team</td>
+              <td class="px-5 py-4 text-neutral-400">Top-3 brands (Rebel, Curefoods) building internally.</td>
+              <td class="px-5 py-4 text-neutral-500 text-xs">18 months + ₹3 Cr to ship. Locked to one brand.</td>
+            </tr>
+            <tr class="bg-emerald-500/[0.03]">
+              <td class="px-5 py-4 font-medium text-emerald-400">Fluxon AI</td>
+              <td class="px-5 py-4 text-neutral-200">Autonomous procurement agent — joint forecast + freshness + vendor + optimization in 9.4s.</td>
+              <td class="px-5 py-4 text-neutral-400 text-xs">Doesn't replace your POS or ERP. Sits beside them.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="text-sm text-neutral-500 mt-6">
+        <span class="text-neutral-300 font-semibold">What we understand that they don't:</span> fresh procurement is not a forecasting problem. It's a <em>joint optimization</em> problem. Demand, shelf-life, vendor reliability, and order quantity must be solved together — not in sequence. Every other approach breaks them apart. We solve them jointly.
+      </p>
+    </div>
+  </section>
+
+  <!-- ========== PILOT TERMS ========== -->
+  <section class="py-24 px-6 border-t border-neutral-900">
+    <div class="max-w-4xl mx-auto">
+      <div class="text-emerald-400 text-xs font-semibold mono mb-4 uppercase tracking-wider">The pilot</div>
+      <h2 class="text-3xl sm:text-4xl font-bold mb-12 leading-tight">
+        60 days. No payment. One success metric we agree on up front.
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="rounded-xl p-6 bg-neutral-900/40 border border-neutral-800">
+          <div class="mono text-xs text-emerald-400 uppercase mb-3">Scope</div>
+          <ul class="space-y-2 text-sm text-neutral-300">
+            <li class="flex gap-2"><span class="text-emerald-400">▸</span> 3–5 of your outlets</li>
+            <li class="flex gap-2"><span class="text-emerald-400">▸</span> Daily indent generation, fresh categories</li>
+            <li class="flex gap-2"><span class="text-emerald-400">▸</span> Run in parallel with current process</li>
+            <li class="flex gap-2"><span class="text-emerald-400">▸</span> Weekly review with your ops head</li>
+          </ul>
+        </div>
+        <div class="rounded-xl p-6 bg-neutral-900/40 border border-neutral-800">
+          <div class="mono text-xs text-emerald-400 uppercase mb-3">Terms</div>
+          <ul class="space-y-2 text-sm text-neutral-300">
+            <li class="flex gap-2"><span class="text-emerald-400">▸</span> Zero payment during pilot</li>
+            <li class="flex gap-2"><span class="text-emerald-400">▸</span> Anonymized SKU demand data only</li>
+            <li class="flex gap-2"><span class="text-emerald-400">▸</span> Either party may exit at any time</li>
+            <li class="flex gap-2"><span class="text-emerald-400">▸</span> Success metric: ≥15% wastage reduction on fresh SKUs</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== PRICING ========== -->
+  <section class="py-24 px-6 border-t border-neutral-900 bg-neutral-950">
+    <div class="max-w-5xl mx-auto">
+      <div class="text-emerald-400 text-xs font-semibold mono mb-4 uppercase tracking-wider">Pricing (post-pilot)</div>
+      <h2 class="text-3xl sm:text-4xl font-bold mb-12 leading-tight">
+        Transparent. Tiered by outlets.
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="rounded-xl p-6 bg-neutral-900/40 border border-neutral-800">
+          <div class="text-sm text-neutral-400 mb-1">Starter</div>
+          <div class="text-2xl font-bold mb-1">₹49,000<span class="text-sm text-neutral-500 font-normal">/month</span></div>
+          <div class="text-xs text-neutral-500 mb-4">5–20 outlets</div>
+          <ul class="space-y-2 text-sm text-neutral-300">
+            <li>• Daily indent generation</li>
+            <li>• 1 kitchen group</li>
+            <li>• Email + Slack alerts</li>
+          </ul>
+        </div>
+        <div class="rounded-xl p-6 bg-emerald-500/[0.03] border border-emerald-500/30 relative">
+          <div class="absolute -top-3 left-6 px-2 py-0.5 rounded bg-emerald-500 text-neutral-950 text-xs font-semibold mono">RECOMMENDED</div>
+          <div class="text-sm text-neutral-400 mb-1">Growth</div>
+          <div class="text-2xl font-bold mb-1">₹1.5–4L<span class="text-sm text-neutral-500 font-normal">/month</span></div>
+          <div class="text-xs text-neutral-500 mb-4">20–100 outlets</div>
+          <ul class="space-y-2 text-sm text-neutral-300">
+            <li>• Everything in Starter</li>
+            <li>• Vendor API integrations</li>
+            <li>• Custom alerting workflows</li>
+            <li>• Quarterly model retraining</li>
+          </ul>
+        </div>
+        <div class="rounded-xl p-6 bg-neutral-900/40 border border-neutral-800">
+          <div class="text-sm text-neutral-400 mb-1">Enterprise</div>
+          <div class="text-2xl font-bold mb-1">₹8L+<span class="text-sm text-neutral-500 font-normal">/month</span></div>
+          <div class="text-xs text-neutral-500 mb-4">100+ outlets · multi-brand · SEA</div>
+          <ul class="space-y-2 text-sm text-neutral-300">
+            <li>• Everything in Growth</li>
+            <li>• White-label deployment</li>
+            <li>• On-prem / VPC isolation</li>
+            <li>• SLA + dedicated support</li>
+          </ul>
+        </div>
+      </div>
+
+      <p class="text-xs text-neutral-500 text-center mt-6">All prices INR, GST extra. Annual contracts -15%.</p>
+    </div>
+  </section>
+
+  <!-- ========== FAQ ========== -->
+  <section class="py-24 px-6 border-t border-neutral-900">
+    <div class="max-w-3xl mx-auto">
+      <div class="text-emerald-400 text-xs font-semibold mono mb-4 uppercase tracking-wider">FAQ</div>
+      <h2 class="text-3xl sm:text-4xl font-bold mb-12 leading-tight">Common questions.</h2>
+
+      <div class="space-y-3">
+        <details class="group p-5 rounded-lg bg-neutral-900/40 border border-neutral-800 hover:border-neutral-700 transition">
+          <summary class="font-semibold flex items-center justify-between">
+            How is this different from Afresh?
+            <span class="chev text-emerald-400">›</span>
+          </summary>
+          <p class="text-neutral-400 mt-3 leading-relaxed text-sm">
+            Afresh is built for US distributor-driven supermarket supply chains. India runs on mandi sourcing — multilingual, weather-volatile, vendor-reliability sensitive — and the SKU mix is different (fresh produce dominant, festivals create 2–3× demand spikes). We rebuilt the math for that.
+          </p>
+        </details>
+
+        <details class="group p-5 rounded-lg bg-neutral-900/40 border border-neutral-800 hover:border-neutral-700 transition">
+          <summary class="font-semibold flex items-center justify-between">
+            Won't Rebel Foods, EatClub, and Curefoods build this in-house?
+            <span class="chev text-emerald-400">›</span>
+          </summary>
+          <p class="text-neutral-400 mt-3 leading-relaxed text-sm">
+            The top 3 brands probably will — Rebel raised $210M with explicit "integrate AI" thesis. Our long-term ICP is the next 500 brands (10–50 outlets, no in-house ML team). Top brands are credibility / pilot targets, not core customers.
+          </p>
+        </details>
+
+        <details class="group p-5 rounded-lg bg-neutral-900/40 border border-neutral-800 hover:border-neutral-700 transition">
+          <summary class="font-semibold flex items-center justify-between">
+            Where does my data live?
+            <span class="chev text-emerald-400">›</span>
+          </summary>
+          <p class="text-neutral-400 mt-3 leading-relaxed text-sm">
+            Pilot: anonymized SKU demand only — no customer or vendor PII. Production: SaaS, VPC-isolated, or on-prem container, your CTO picks. We sign DPAs, sit behind your SSO, log every decision for audit.
+          </p>
+        </details>
+
+        <details class="group p-5 rounded-lg bg-neutral-900/40 border border-neutral-800 hover:border-neutral-700 transition">
+          <summary class="font-semibold flex items-center justify-between">
+            Is the demo on this page real?
+            <span class="chev text-emerald-400">›</span>
+          </summary>
+          <p class="text-neutral-400 mt-3 leading-relaxed text-sm">
+            Yes. Every number on this page is from the actual running pipeline on synthetic Mumbai cloud-kitchen data. The pipeline runs in 9.4 seconds. The indent table above is real output. Reproducible — happy to walk through the code on call.
+          </p>
+        </details>
+
+        <details class="group p-5 rounded-lg bg-neutral-900/40 border border-neutral-800 hover:border-neutral-700 transition">
+          <summary class="font-semibold flex items-center justify-between">
+            Why the name Fluxon?
+            <span class="chev text-emerald-400">›</span>
+          </summary>
+          <p class="text-neutral-400 mt-3 leading-relaxed text-sm">
+            A fluxon is the smallest unit of magnetic flux — a quantum of flow. Fresh procurement is a continuous flow of demand, supply, freshness, and risk. Naming the company for the smallest unit of that flow felt right.
+          </p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== CTA ========== -->
+  <section id="demo" class="py-32 px-6 border-t border-neutral-900 gradient-bg relative overflow-hidden">
+    <div class="absolute inset-0 grid-bg opacity-30"></div>
+    <div class="max-w-2xl mx-auto text-center relative">
+      <div class="text-emerald-400 text-xs font-semibold mono mb-4 uppercase tracking-wider">Request a demo</div>
+      <h2 class="text-4xl sm:text-6xl font-bold mb-6 leading-[1.05]">
+        See Fluxon decide<br/>tomorrow's order.
+      </h2>
+      <p class="text-lg text-neutral-400 mb-12 max-w-lg mx-auto">
+        Live demo. Synthetic data shaped like your category. Thirty minutes. No deck.
+      </p>
+
+      <form
+        action="https://formspree.io/f/REPLACE_WITH_YOUR_FORM_ID"
+        method="POST"
+        class="space-y-3 text-left"
+      >
+        <div>
+          <label class="block text-xs text-neutral-500 mono uppercase tracking-wider mb-2">Work email</label>
+          <input
+            type="email"
+            name="email"
+            placeholder="you@brand.com"
+            required
+            class="w-full px-4 py-3 rounded-md bg-neutral-900/60 border border-neutral-800 text-neutral-100 placeholder-neutral-600 focus:outline-none focus:border-emerald-500 transition"
+          />
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs text-neutral-500 mono uppercase tracking-wider mb-2">Brand</label>
+            <input
+              type="text"
+              name="brand"
+              placeholder="e.g. EatClub"
+              required
+              class="w-full px-4 py-3 rounded-md bg-neutral-900/60 border border-neutral-800 text-neutral-100 placeholder-neutral-600 focus:outline-none focus:border-emerald-500 transition"
+            />
+          </div>
+          <div>
+            <label class="block text-xs text-neutral-500 mono uppercase tracking-wider mb-2"># Outlets</label>
+            <input
+              type="number"
+              name="outlets"
+              placeholder="e.g. 30"
+              min="1"
+              required
+              class="w-full px-4 py-3 rounded-md bg-neutral-900/60 border border-neutral-800 text-neutral-100 placeholder-neutral-600 focus:outline-none focus:border-emerald-500 transition"
+            />
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs text-neutral-500 mono uppercase tracking-wider mb-2">What hurts most? <span class="text-neutral-700 normal-case">(optional)</span></label>
+          <textarea
+            name="pain"
+            rows="2"
+            placeholder="Wastage on fresh? Vendor reliability? Forecasting?"
+            class="w-full px-4 py-3 rounded-md bg-neutral-900/60 border border-neutral-800 text-neutral-100 placeholder-neutral-600 focus:outline-none focus:border-emerald-500 transition resize-none"
+          ></textarea>
+        </div>
+        <button type="submit" class="w-full px-6 py-3.5 rounded-md bg-emerald-500 text-neutral-950 font-semibold hover:bg-emerald-400 transition mt-2">
+          Request demo →
+        </button>
+        <p class="text-xs text-neutral-500 pt-3 text-center">
+          Response within 24 hours. <span class="text-neutral-600">·</span> No spam.
+        </p>
+      </form>
+    </div>
+  </section>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="py-12 px-6 border-t border-neutral-900">
+    <div class="max-w-6xl mx-auto">
+      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 text-sm">
+        <div>
+          <div class="flex items-center gap-2.5 mb-2">
+            <div class="relative w-6 h-6">
+              <div class="absolute inset-0 rounded-full bg-emerald-500"></div>
+              <div class="absolute inset-[4px] rounded-full bg-neutral-950"></div>
+            </div>
+            <span class="font-semibold">Fluxon AI</span>
+          </div>
+          <div class="text-xs text-neutral-500 mono">© 2026 Fluxon AI · Gurugram, India</div>
+        </div>
+        <div class="flex flex-wrap gap-x-6 gap-y-2 text-neutral-500">
+          <a href="mailto:hello@fluxon-ai.com" class="hover:text-neutral-300 transition">hello@fluxon-ai.com</a>
+          <a href="https://www.linkedin.com/in/suresh-iitd/" target="_blank" rel="noopener" class="hover:text-neutral-300 transition">LinkedIn</a>
+          <a href="https://github.com/gullycoder" target="_blank" rel="noopener" class="hover:text-neutral-300 transition">GitHub</a>
+          <span class="mono text-orange-500/70">YC S26 →</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Smooth scroll -->
+  <script>
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>
